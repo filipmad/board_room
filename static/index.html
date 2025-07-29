@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Collaborative Whiteboard</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="board" width="800" height="600"></canvas>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('board');
+      const ctx = canvas.getContext('2d');
+
+      // Drawing - Left Click
+      let drawing = false;
+
+      // Erasing - Right Click
+      let lastPos = null;
+      
+      const socket = new WebSocket(`ws://${location.host}/ws`);
+
+      function drawStroke(stroke) {
+        ctx.strokeStyle = stroke.color || 'black';
+        ctx.lineWidth = stroke.size || 2;
+        ctx.beginPath();
+        ctx.moveTo(stroke.from.x, stroke.from.y);
+        ctx.lineTo(stroke.to.x, stroke.to.y);
+        ctx.stroke();
+      }
+
+      socket.onmessage = (event) => {
+        const stroke = JSON.parse(event.data);
+        drawStroke(stroke);
+      };
+
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        lastPos = getMousePos(e);
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        drawing = false;
+        lastPos = null;
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        const currentPos = getMousePos(e);
+
+        const stroke = {
+          from: lastPos,
+          to: currentPos,
+          color: 'black',
+          size: 2,
+        };
+
+        drawStroke(stroke); // draw locally
+        socket.send(JSON.stringify(stroke)); // send to server
+        lastPos = currentPos;
+      });
+
+      function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        };
+      }
+    });
+  </script>
+</body>
+</html>
