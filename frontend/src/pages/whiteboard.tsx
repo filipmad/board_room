@@ -43,7 +43,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
     ctx.lineWidth = 3;
     ctxRef.current = ctx;
 
-    
+
 
     const ws = new WebSocket(`wss://${WS_HOST}/ws`);
     socket.current = ws;
@@ -103,7 +103,10 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
     ctx.moveTo(x, y);
 
     ctx.strokeStyle = currentColour;
-    socket.current?.send(JSON.stringify({ type: "begin", x, y, colour: colourRef.current }));
+    if (socket.current?.readyState === WebSocket.OPEN) {
+      socket.current.send(JSON.stringify({ type: "begin", x, y, colour: colourRef.current }));
+    }
+
 
     // temp
     currentStroke.current = [{ x, y }];
@@ -120,10 +123,13 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
     ctx.lineTo(x, y);
     ctx.stroke();
 
-    // TEMP
+    // TEMPFse
     currentStroke.current.push({ x, y });
 
-    socket.current?.send(JSON.stringify({ type: "draw", x, y, colour: colourRef.current }));
+    if (socket.current?.readyState === WebSocket.OPEN) {
+      socket.current.send(JSON.stringify({ type: "draw", x, y, colour: colourRef.current }));
+    }
+
   };
 
   const handleMouseUp = () => {
@@ -135,7 +141,10 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
     isDrawing.current = false;
     if (ctxRef.current) ctxRef.current.closePath();
 
-    socket.current?.send(JSON.stringify({ type: "end" }));
+    if (socket.current?.readyState === WebSocket.OPEN) {
+      socket.current.send(JSON.stringify({ type: "end" }));
+    }
+
   };
 
 

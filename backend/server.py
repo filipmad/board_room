@@ -16,13 +16,14 @@ origins = [
     #"http://localhost:5173",
     "http://192.168.1.119:5173",  # 👈 add this
     #"http://127.0.0.1:5173",      # 👈 add this too, if relevant
+    "https://main.d3ok75ez5dlq8f.amplifyapp.com"
 ]
 
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this to your frontend domain later
+    allow_origins = ["https://main.d3ok75ez5dlq8f.amplifyapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
