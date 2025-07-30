@@ -13,9 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173",
+    #"http://localhost:5173",
     "http://192.168.1.119:5173",  # 👈 add this
-    "http://127.0.0.1:5173",      # 👈 add this too, if relevant
+    #"http://127.0.0.1:5173",      # 👈 add this too, if relevant
 ]
 
 app.add_middleware(
@@ -25,12 +25,6 @@ app.add_middleware(
     allow_methods=["*"],     # allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],     # allow all headers
 )
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-@app.get("/")
-async def get():
-    return FileResponse("static/index.html")
 
 connected_clients = set()
 canvas_state = []  # stores all strokes
@@ -57,30 +51,45 @@ async def analyze_stroke(stroke: Stroke):
 
     # Add your table detection or more here...
 
+    # Check that the lines intersect
+
     return {"shape": "unknown"}
 
 
-
+# Websocket functionality
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     print("web socket established")
     await websocket.accept()
+
+    
     connected_clients.add(websocket)
 
-    # Step 1: Send existing canvas state to this client
+    # Send existing canvas state to this client
     for stroke in canvas_state:
         await websocket.send_text(json.dumps(stroke))
 
     try:
         while True:
             data = await websocket.receive_text()
-            # Step 2: Store new stroke
+            # Store new stroke
             stroke = json.loads(data)
             canvas_state.append(stroke)
 
-            # 🧠 Step 3: Broadcast to all other clients
+            # Broadcast to all other clients
+            disconnected = set()
             for client in connected_clients:
                 if client != websocket:
-                    await client.send_text(json.dumps(stroke))
+                    try:
+                        await client.send_text(json.dumps(stroke))
+                    except Exception as e:
+                        # This client is dead
+                        print("EXCEPTION: ",e)
+                        disconnected.add(client)
+
+            # Clean up dead clients
+            for dc in disconnected:
+                connected_clients.remove(dc)
+    
     except WebSocketDisconnect:
         connected_clients.remove(websocket)

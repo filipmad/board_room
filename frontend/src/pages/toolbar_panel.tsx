@@ -116,9 +116,9 @@ const ToolBarPanel: React.FC<ToolBarPanelProps> = ({
       </Tooltip>
 
       {/* Toggle AI Completion */}
-      <FormGroup>
-        <FormControlLabel control={<Switch defaultChecked />} label="AI Draw Autocomplete" />
-      </FormGroup>
+       <Tooltip title="AI Draw Complete">
+        {<Switch defaultChecked />}
+       </Tooltip>
     </Toolbar>
   );
 };

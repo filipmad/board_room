@@ -9,6 +9,7 @@ interface WhiteboardProps {
 
 
 const WS_HOST = "192.168.1.119:8000";
+//const WS_HOST = "localhost:8000";
 
 const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -42,6 +43,8 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
     ctx.strokeStyle = currentColour;
     ctx.lineWidth = 3;
     ctxRef.current = ctx;
+
+    
 
     const ws = new WebSocket(`ws://${WS_HOST}/ws`);
     socket.current = ws;
