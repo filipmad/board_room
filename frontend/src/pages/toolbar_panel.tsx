@@ -1,4 +1,5 @@
-import { useState, type SetStateAction } from 'react';
+import React, { useState, type SetStateAction} from 'react';
+import type { MouseEvent } from 'react';
 
 import {
   Box,
@@ -32,14 +33,15 @@ const ToolBarPanel: React.FC<ToolBarPanelProps> = ({
   onSummarize,
   onClear
 }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
 
   // Current Brush Icon Colour
+  
   const [currentIconColour, setIconColour] = useState('black');
 
-  const handleColorClick = (event: { currentTarget: SetStateAction<null>; }) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -77,7 +79,7 @@ const ToolBarPanel: React.FC<ToolBarPanelProps> = ({
     >
       {/* Color Selector */}
       <Tooltip title="Select Pen Color">
-        <IconButton onClick={handleColorClick} sx={{ color: currentIconColour }}>
+        <IconButton onClick={handleClick} sx={{ color: currentIconColour }}>
           <BrushColor />
         </IconButton>
       </Tooltip>
@@ -114,9 +116,9 @@ const ToolBarPanel: React.FC<ToolBarPanelProps> = ({
       </Tooltip>
 
       {/* Toggle AI Completion */}
-       <Tooltip title="AI Draw Complete">
+      <Tooltip title="AI Draw Complete">
         {<Switch defaultChecked />}
-       </Tooltip>
+      </Tooltip>
     </Toolbar>
   );
 };

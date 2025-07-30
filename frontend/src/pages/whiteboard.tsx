@@ -1,8 +1,5 @@
 import React, { useRef, useEffect } from "react";
 
-// Get ToolBar Components
-import ToolBarPanel from "./toolbar_panel";
-
 interface WhiteboardProps {
   currentColour: string;
 }
