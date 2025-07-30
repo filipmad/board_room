@@ -1,4 +1,4 @@
-import React, { useState, type SetStateAction} from 'react';
+import React, { useState } from 'react';
 import type { MouseEvent } from 'react';
 
 import {
