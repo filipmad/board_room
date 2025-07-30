@@ -18,12 +18,14 @@ origins = [
     #"http://127.0.0.1:5173",      # 👈 add this too, if relevant
 ]
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,   # allow this origin to access backend
+    allow_origins=["*"],  # You can restrict this to your frontend domain later
     allow_credentials=True,
-    allow_methods=["*"],     # allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],     # allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 connected_clients = set()

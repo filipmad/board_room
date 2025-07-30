@@ -5,8 +5,10 @@ interface WhiteboardProps {
 }
 
 
-const WS_HOST = "192.168.1.119:8000";
+// const WS_HOST = "192.168.1.119:8000";
 //const WS_HOST = "localhost:8000";
+const WS_HOST = "fastapi-env.eba-ujanvtez.us-west-2.elasticbeanstalk.com";
+
 
 const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -43,7 +45,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
 
     
 
-    const ws = new WebSocket(`ws://${WS_HOST}/ws`);
+    const ws = new WebSocket(`wss://${WS_HOST}/ws`);
     socket.current = ws;
 
     ws.onmessage = (event) => {
@@ -74,7 +76,8 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ currentColour }) => {
 
   // AI THING
   const analyzeStrokeBackend = async (stroke: { x: number; y: number }[]) => {
-    const response = await fetch(`http://${WS_HOST}/analyze`, {
+    // const response = await fetch(`http://${WS_HOST}/analyze`, {
+    const response = await fetch(`https://${WS_HOST}/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ points: stroke }),
